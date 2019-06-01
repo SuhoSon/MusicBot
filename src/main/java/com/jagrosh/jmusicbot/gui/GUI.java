@@ -57,6 +57,8 @@ public class GUI extends JFrame
                 try
                 {
                     bot.shutdown();
+                    dispose();
+                    System.exit(0);
                 }
                 catch(Exception ex)
                 {

@@ -155,7 +155,6 @@ public class JMusicBot
             try 
             {
                 GUI gui = new GUI(bot);
-                bot.setGUI(gui);
                 gui.init();
             } 
             catch(Exception e) 
