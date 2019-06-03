@@ -21,7 +21,6 @@ import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.NowplayingHandler;
 import com.jagrosh.jmusicbot.audio.PlayerManager;
-import com.jagrosh.jmusicbot.gui.GUI;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import java.util.Objects;
@@ -45,7 +44,6 @@ public class Bot
     
     private boolean shuttingDown = false;
     private JDA jda;
-    private GUI gui;
     
     public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings)
     {
@@ -135,18 +133,10 @@ public class Bot
             });
             jda.shutdown();
         }
-        if(gui!=null)
-            gui.dispose();
-        System.exit(0);
     }
 
     public void setJDA(JDA jda)
     {
         this.jda = jda;
-    }
-    
-    public void setGUI(GUI gui)
-    {
-        this.gui = gui;
     }
 }
