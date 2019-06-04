@@ -45,7 +45,7 @@ public class Bot
     private boolean shuttingDown = false;
     private JDA jda;
     
-    public Bot(EventWaiter waiter, BotConfig config, SettingsManager settings)
+    private Bot(EventWaiter waiter, BotConfig config, SettingsManager settings)
     {
         this.waiter = waiter;
         this.config = config;
@@ -138,5 +138,26 @@ public class Bot
     public void setJDA(JDA jda)
     {
         this.jda = jda;
+    }
+    public static class Builder {
+        private EventWaiter waiter;
+        private BotConfig config;
+        private SettingsManager settings;
+        Builder (){}
+        public Builder setEventWaiter(EventWaiter waiter){
+            this.waiter = waiter;
+            return this;
+        }
+        public Builder setBotConfig(BotConfig config){
+            this.config = config;
+            return this;
+        }
+        public Builder setSettingsManager(SettingsManager settings){
+            this.settings = settings;
+            return this;
+        }
+        public Bot build(){
+            return new Bot(waiter,config,settings);
+        }
     }
 }
