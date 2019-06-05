@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.commands.dj;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import com.jagrosh.jmusicbot.settings.Settings;
 
@@ -26,9 +25,9 @@ import com.jagrosh.jmusicbot.settings.Settings;
  */
 public class RepeatCmd extends DJCommand
 {
-    public RepeatCmd(Bot bot)
+    public RepeatCmd()
     {
-        super(bot);
+        super();
         this.name = "repeat";
         this.help = "re-adds music to the queue when finished";
         this.arguments = "[on|off]";

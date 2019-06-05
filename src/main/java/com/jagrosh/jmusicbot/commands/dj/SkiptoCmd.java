@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.commands.dj;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 
@@ -26,9 +25,9 @@ import com.jagrosh.jmusicbot.commands.DJCommand;
  */
 public class SkiptoCmd extends DJCommand 
 {
-    public SkiptoCmd(Bot bot)
+    public SkiptoCmd()
     {
-        super(bot);
+        super();
         this.name = "skipto";
         this.help = "skips to the specified song";
         this.arguments = "<position>";

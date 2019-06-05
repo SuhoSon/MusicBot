@@ -18,9 +18,9 @@ package com.jagrosh.jmusicbot.commands;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.settings.Settings;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
+import com.jagrosh.jmusicbot.audio.PlayerManager;
 
 import net.dv8tion.jda.core.entities.Guild;
 import net.dv8tion.jda.core.entities.GuildVoiceState;
@@ -34,13 +34,20 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
  */
 public abstract class MusicCommand extends Command 
 {
-    protected final Bot bot;
+    protected final PlayerManager players;
     protected boolean bePlaying;
     protected boolean beListening;
     
-    public MusicCommand(Bot bot)
+    public MusicCommand()
     {
-        this.bot = bot;
+    	players = null;
+        this.guildOnly = true;
+        this.category = new Category("Music");
+    }
+    
+    public MusicCommand(PlayerManager players)
+    {
+        this.players = players;
         this.guildOnly = true;
         this.category = new Category("Music");
     }
@@ -63,7 +70,7 @@ public abstract class MusicCommand extends Command
             return;
         }
         
-        bot.getPlayerManager().setUpHandler(eventGuild); // no point constantly checking for this later
+        players.setUpHandler(eventGuild); // no point constantly checking for this later
         if(bePlaying && !((AudioHandler)eventGuild.getAudioManager().getSendingHandler()).isMusicPlaying(event.getJDA()))
         {
             event.reply(eventClient.getError()+" There must be music playing to use that!");

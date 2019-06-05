@@ -17,7 +17,6 @@ package com.jagrosh.jmusicbot.commands.music;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jlyrics.LyricsClient;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -31,9 +30,9 @@ public class LyricsCmd extends MusicCommand
 {
     private final LyricsClient client = new LyricsClient();
     
-    public LyricsCmd(Bot bot)
+    public LyricsCmd()
     {
-        super(bot);
+        super();
         this.name = "lyrics";
         this.arguments = "[song name]";
         this.help = "shows the lyrics to the currently-playing song";

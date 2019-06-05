@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.commands.owner;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 
 /**
@@ -25,11 +24,11 @@ import com.jagrosh.jmusicbot.commands.OwnerCommand;
  */
 public class ShutdownCmd extends OwnerCommand
 {
-    private final Bot bot;
+    private final BotControlCmd botControlCmd;
     
-    public ShutdownCmd(Bot bot)
+    public ShutdownCmd(BotControlCmd botControlCmd)
     {
-        this.bot = bot;
+        this.botControlCmd = botControlCmd;
         this.name = "shutdown";
         this.help = "safely shuts down";
         this.guildOnly = false;
@@ -39,6 +38,6 @@ public class ShutdownCmd extends OwnerCommand
     protected void execute(CommandEvent event)
     {
         event.replyWarning("Shutting down...");
-        bot.shutdown();
+        botControlCmd.shutdown();
     }
 }

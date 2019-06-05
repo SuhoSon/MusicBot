@@ -15,7 +15,7 @@
  */
 package com.jagrosh.jmusicbot.commands;
 
-import com.jagrosh.jmusicbot.Bot;
+import com.jagrosh.jmusicbot.audio.PlayerManager;
 import com.jagrosh.jmusicbot.settings.Settings;
 import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.Role;
@@ -26,9 +26,25 @@ import net.dv8tion.jda.core.entities.Role;
  */
 public abstract class DJCommand extends MusicCommand
 {
-    public DJCommand(Bot bot)
+    public DJCommand()
     {
-        super(bot);
+        super();
+        this.category = new Category("DJ", event -> 
+        {
+            if(event.getAuthor().getId().equals(event.getClient().getOwnerId()))
+                return true;
+            if(event.getGuild()==null)
+                return true;
+            if(event.getMember().hasPermission(Permission.MANAGE_SERVER))
+                return true;
+            Settings settings = event.getClient().getSettingsFor(event.getGuild());
+            Role dj = settings.getRole(event.getGuild());
+            return dj!=null && (event.getMember().getRoles().contains(dj) || dj.getIdLong()==event.getGuild().getIdLong());
+        });
+    }
+    public DJCommand(PlayerManager players)
+    {
+        super(players);
         this.category = new Category("DJ", event -> 
         {
             if(event.getAuthor().getId().equals(event.getClient().getOwnerId()))

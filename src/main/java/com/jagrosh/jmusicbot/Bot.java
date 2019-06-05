@@ -20,7 +20,9 @@ import java.util.concurrent.ScheduledExecutorService;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.audio.NowplayingHandler;
+import com.jagrosh.jmusicbot.audio.Player;
 import com.jagrosh.jmusicbot.audio.PlayerManager;
+import com.jagrosh.jmusicbot.commands.owner.BotControlCmd;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import java.util.Objects;
@@ -32,7 +34,7 @@ import net.dv8tion.jda.core.entities.Guild;
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class Bot
+public class Bot implements Player, BotControlCmd
 {
     private final EventWaiter waiter;
     private final ScheduledExecutorService threadpool;

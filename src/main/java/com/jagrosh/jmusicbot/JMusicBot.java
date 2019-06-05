@@ -77,6 +77,7 @@ public class JMusicBot
         if(!config.isValid())
             return;
         
+        
         // set up the listener
         EventWaiter waiter = new EventWaiter();
         SettingsManager settings = new SettingsManager();
@@ -102,32 +103,32 @@ public class JMusicBot
                         new PingCommand(),
                         new SettingsCmd(),
                         
-                        new LyricsCmd(bot),
-                        new NowplayingCmd(bot),
-                        new PlayCmd(bot, config.getLoading()),
-                        new PlaylistsCmd(bot),
-                        new QueueCmd(bot),
-                        new RemoveCmd(bot),
-                        new SearchCmd(bot, config.getSearching()),
-                        new SCSearchCmd(bot, config.getSearching()),
-                        new ShuffleCmd(bot),
-                        new SkipCmd(bot),
+                        new LyricsCmd(),
+                        new NowplayingCmd(bot.getPlayerManager()),
+                        new PlayCmd(bot.getPlayerManager(), config.getLoading()),
+                        new PlaylistsCmd(bot.getPlayerManager()),
+                        new QueueCmd(bot.getPlayerManager()),
+                        new RemoveCmd(),
+                        new SearchCmd(bot.getPlayerManager(), config.getSearching()),
+                        new SCSearchCmd(bot.getPlayerManager(), config.getSearching()),
+                        new ShuffleCmd(),
+                        new SkipCmd(),
                         
-                        new ForceskipCmd(bot),
-                        new MoveTrackCmd(bot),
-                        new PauseCmd(bot),
-                        new PlaynextCmd(bot, config.getLoading()),
-                        new RepeatCmd(bot),
-                        new SkiptoCmd(bot),
-                        new StopCmd(bot),
-                        new VolumeCmd(bot),
+                        new ForceskipCmd(),
+                        new MoveTrackCmd(),
+                        new PauseCmd(),
+                        new PlaynextCmd(bot.getPlayerManager(), config.getLoading()),
+                        new RepeatCmd(),
+                        new SkiptoCmd(),
+                        new StopCmd(),
+                        new VolumeCmd(),
                         
                         new SetdjCmd(),
                         new SettcCmd(),
                         new SetvcCmd(),
                         
-                        new AutoplaylistCmd(bot),
-                        new PlaylistCmd(bot),
+                        new AutoplaylistCmd(bot.getPlaylistLoader()),
+                        new PlaylistCmd(bot.getPlaylistLoader()),
                         new SetavatarCmd(),
                         new SetgameCmd(),
                         new SetnameCmd(),

@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.commands.dj;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 
@@ -26,9 +25,9 @@ import com.jagrosh.jmusicbot.commands.DJCommand;
  */
 public class PauseCmd extends DJCommand 
 {
-    public PauseCmd(Bot bot)
+    public PauseCmd()
     {
-        super(bot);
+        super();
         this.name = "pause";
         this.help = "pauses the current song";
         this.bePlaying = true;

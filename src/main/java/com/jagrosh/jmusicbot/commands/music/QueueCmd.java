@@ -19,9 +19,9 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.menu.Paginator;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.JMusicBot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
+import com.jagrosh.jmusicbot.audio.PlayerManager;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
 import com.jagrosh.jmusicbot.settings.Settings;
@@ -41,9 +41,9 @@ public class QueueCmd extends MusicCommand
     
     private final Paginator.Builder builder;
     
-    public QueueCmd(Bot bot)
+    public QueueCmd(PlayerManager players)
     {
-        super(bot);
+        super(players);
         this.name = "queue";
         this.help = "shows the current queue";
         this.arguments = "[pagenum]";
@@ -57,7 +57,7 @@ public class QueueCmd extends MusicCommand
                 .waitOnSinglePage(false)
                 .useNumberedItems(true)
                 .showPageNumbers(true)
-                .setEventWaiter(bot.getWaiter())
+                .setEventWaiter(players.getPlayer().getWaiter())
                 .setTimeout(1, TimeUnit.MINUTES);
     }
 
@@ -82,7 +82,7 @@ public class QueueCmd extends MusicCommand
             event.reply(built, m -> 
             {
                 if(nowp!=null)
-                    bot.getNowplayingHandler().setLastNPMessage(m);
+                	players.getPlayer().getNowplayingHandler().setLastNPMessage(m);
             });
             return;
         }

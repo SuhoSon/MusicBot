@@ -16,9 +16,9 @@
 package com.jagrosh.jmusicbot;
 
 import com.jagrosh.jmusicbot.entities.Prompt;
+import com.jagrosh.jmusicbot.playlist.PlaylistConfig;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
-import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.typesafe.config.*;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,7 +37,7 @@ import net.dv8tion.jda.core.entities.Game;
  * 
  * @author John Grosh (jagrosh)
  */
-public class BotConfig
+public class BotConfig implements PlaylistConfig
 {
     private final Prompt prompt;
     private final static String CONTEXT = "Config";
@@ -306,12 +306,5 @@ public class BotConfig
     public String getMaxTime()
     {
         return FormatUtil.formatTime(maxSeconds * 1000);
-    }
-    
-    public boolean isTooLong(AudioTrack track)
-    {
-        if(maxSeconds<=0)
-            return false;
-        return Math.round(track.getDuration()/1000.0) > maxSeconds;
     }
 }
