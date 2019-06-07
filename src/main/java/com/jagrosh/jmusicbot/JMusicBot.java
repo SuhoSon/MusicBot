@@ -179,6 +179,7 @@ public class JMusicBot
             
             ShutdownListener shutdownlistener = new ShutdownListener(jda);
             cb.addCommand(new ShutdownCmd(shutdownlistener));
+            
             if(!prompt.isNoGUI())
             {
                 try 
