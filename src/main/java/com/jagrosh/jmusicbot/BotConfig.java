@@ -15,6 +15,8 @@
  */
 package com.jagrosh.jmusicbot;
 
+import com.jagrosh.jmusicbot.audio.NowplayingConfig;
+import com.jagrosh.jmusicbot.audio.PlayerConfig;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.playlist.PlaylistConfig;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
@@ -37,7 +39,7 @@ import net.dv8tion.jda.core.entities.Game;
  * 
  * @author John Grosh (jagrosh)
  */
-public class BotConfig implements PlaylistConfig
+public class BotConfig implements PlaylistConfig, NowplayingConfig, PlayerConfig
 {
     private final Prompt prompt;
     private final static String CONTEXT = "Config";

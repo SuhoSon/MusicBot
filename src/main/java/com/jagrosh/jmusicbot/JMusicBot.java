@@ -20,8 +20,10 @@ import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.examples.command.*;
 import com.jagrosh.jmusicbot.audio.Nowplaying;
+import com.jagrosh.jmusicbot.audio.NowplayingConfig;
 import com.jagrosh.jmusicbot.audio.NowplayingHandler;
 import com.jagrosh.jmusicbot.audio.Player;
+import com.jagrosh.jmusicbot.audio.PlayerConfig;
 import com.jagrosh.jmusicbot.audio.PlayerManager;
 import com.jagrosh.jmusicbot.commands.admin.*;
 import com.jagrosh.jmusicbot.commands.dj.*;
@@ -82,16 +84,15 @@ public class JMusicBot
         if(!config.isValid())
             return;
         
-        
         // set up the listener
         EventWaiter waiter = new EventWaiter();
         SettingsManager settings = new SettingsManager();
         Bot bot = new Bot.Builder().setEventWaiter(waiter).setBotConfig(config).setSettingsManager(settings).build();
         
-        NowplayingHandler nowplaying = new NowplayingHandler((Nowplaying)bot);
+        NowplayingHandler nowplaying = new NowplayingHandler((Nowplaying)bot, (NowplayingConfig)config);
         nowplaying.init();
 
-        PlayerManager playermanager = new PlayerManager((Player)bot, nowplaying);
+        PlayerManager playermanager = new PlayerManager((Player)bot, nowplaying, (PlayerConfig)config);
         playermanager.init();
 
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),

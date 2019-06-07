@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.audio;
 
 import com.jagrosh.jmusicbot.JMusicBot;
-import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader.Playlist;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -50,18 +49,16 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
     private final Set<String> votes = new HashSet<>();
     
     private final PlayerManager manager;
-    private final PlaylistLoader playlists;
     private final AudioPlayer audioPlayer;
     private final long guildId;
     
     private AudioFrame lastFrame;
 
-    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player, PlaylistLoader playlists)
+    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player)
     {
         this.manager = manager;
         this.audioPlayer = player;
         this.guildId = guild.getIdLong();
-        this.playlists = playlists;
     }
     
     public long getGuildId() {
@@ -139,7 +136,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         if(settings==null || settings.getDefaultPlaylist()==null)
             return false;
         
-        Playlist pl = playlists.getPlaylist(settings.getDefaultPlaylist());
+        Playlist pl = manager.getPlaylistLoader().getPlaylist(settings.getDefaultPlaylist());
         if(pl==null || pl.getItems().isEmpty())
             return false;
         pl.loadTracks(manager, (at) -> 
@@ -150,7 +147,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
                 defaultQueue.add(at);
         }, () -> 
         {
-            if(pl.getAudioTracks().isEmpty() && !manager.getPlayer().getConfig().getStay())
+            if(pl.getAudioTracks().isEmpty() && !manager.getPlayerConfig().getStay())
                 manager.getPlayer().closeAudioConnection(guildId);
         });
         return true;
@@ -171,7 +168,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
             if(!playFromDefault())
             {
                 manager.getNowplayingHandler().onTrackUpdate(guildId, null, this);
-                if(!manager.getPlayer().getConfig().getStay())
+                if(!manager.getPlayerConfig().getStay())
                     manager.getPlayer().closeAudioConnection(guildId);
             }
         }
@@ -200,7 +197,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
             MessageBuilder messageBuilder = new MessageBuilder();
             EmbedBuilder embedBuilder = new EmbedBuilder();
             
-            messageBuilder.append(FormatUtil.filter(manager.getPlayer().getConfig().getSuccess()+" **Now Playing in "+guild.getSelfMember().getVoiceState().getChannel().getName()+"...**"));
+            messageBuilder.append(FormatUtil.filter(manager.getPlayerConfig().getSuccess()+" **Now Playing in "+guild.getSelfMember().getVoiceState().getChannel().getName()+"...**"));
             
             embedBuilder.setColor(guild.getSelfMember().getColor());
             
@@ -233,7 +230,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
 	}
 
 	private void setThumbnailOnEmbedBuilder(AudioTrack track, EmbedBuilder embedBuilder) {
-		if(track instanceof YoutubeAudioTrack && manager.getPlayer().getConfig().useNPImages())
+		if(track instanceof YoutubeAudioTrack && manager.getPlayerConfig().useNPImages())
 		{
 		    embedBuilder.setThumbnail("https://img.youtube.com/vi/"+track.getIdentifier()+"/mqdefault.jpg");
 		}
@@ -265,7 +262,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
     {
         Guild guild = guild(jda);
         return new MessageBuilder()
-                .setContent(FormatUtil.filter(manager.getPlayer().getConfig().getSuccess()+" **Now Playing...**"))
+                .setContent(FormatUtil.filter(manager.getPlayerConfig().getSuccess()+" **Now Playing...**"))
                 .setEmbed(new EmbedBuilder()
                 .setTitle("No music playing")
                 .setDescription(JMusicBot.STOP_EMOJI+" "+FormatUtil.progressBar(-1)+" "+FormatUtil.volumeIcon(audioPlayer.getVolume()))

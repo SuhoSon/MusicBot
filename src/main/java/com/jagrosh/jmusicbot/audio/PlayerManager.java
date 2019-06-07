@@ -29,14 +29,16 @@ import net.dv8tion.jda.core.entities.Guild;
 public class PlayerManager extends DefaultAudioPlayerManager
 {
     private final Player player;
+    private final PlayerConfig playerConfig;
     private final NowplayingHandler nowplayingHandler;
     private final PlaylistLoader playlists;
     
-    public PlayerManager(Player player, NowplayingHandler nowplayingHandler)
+    public PlayerManager(Player player, NowplayingHandler nowplayingHandler, PlayerConfig playerConfig)
     {
         this.player = player;
         this.nowplayingHandler = nowplayingHandler;
         this.playlists = null;
+        this.playerConfig = playerConfig;
     }
     
     public PlaylistLoader getPlaylistLoader() {
@@ -52,6 +54,10 @@ public class PlayerManager extends DefaultAudioPlayerManager
     
     public Player getPlayer() {
     	return player;
+    }
+    
+    public PlayerConfig getPlayerConfig() {
+    	return playerConfig;
     }
     
     public NowplayingHandler getNowplayingHandler() {
@@ -70,7 +76,7 @@ public class PlayerManager extends DefaultAudioPlayerManager
         {
             AudioPlayer audioPlayer = createPlayer();
             audioPlayer.setVolume(player.getSettingsManager().getSettings(guild).getVolume());
-            handler = new AudioHandler(this, guild, audioPlayer, playlists);
+            handler = new AudioHandler(this, guild, audioPlayer);
             audioPlayer.addListener(handler);
             guild.getAudioManager().setSendingHandler(handler);
         }

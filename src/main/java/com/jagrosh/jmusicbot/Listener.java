@@ -73,11 +73,11 @@ public class Listener extends ListenerAdapter
             }
             catch(Exception ignore) {}
         });
-        if(playermanager.getPlayer().getConfig().useUpdateAlerts())
+        if(playermanager.getPlayerConfig().useUpdateAlerts())
         {
         	playermanager.getNowplayingHandler().getNowplaying().getThreadpool().scheduleWithFixedDelay(() -> 
             {
-                User owner = playermanager.getNowplayingHandler().getJDA().getUserById(playermanager.getPlayer().getConfig().getOwnerId());
+                User owner = playermanager.getNowplayingHandler().getJDA().getUserById(playermanager.getPlayerConfig().getOwnerId());
                 if(owner!=null)
                 {
                     String currentVersion = OtherUtil.getCurrentVersion();
@@ -116,10 +116,10 @@ public class Listener extends ListenerAdapter
         Guild dbots = jda.getGuildById(110373943822540800L);
         if(dbots==null)
             return;
-        if(playermanager.getPlayer().getConfig().getDBots())
+        if(playermanager.getPlayerConfig().getDBots())
             return;
         jda.getTextChannelById(119222314964353025L)
-                .sendMessage("This account is running JMusicBot. Please do not list bot clones on this server, <@"+playermanager.getPlayer().getConfig().getOwnerId()+">.").complete();
+                .sendMessage("This account is running JMusicBot. Please do not list bot clones on this server, <@"+playermanager.getPlayerConfig().getOwnerId()+">.").complete();
         dbots.leave().queue();
     }
 }

@@ -39,15 +39,17 @@ import net.dv8tion.jda.core.exceptions.PermissionException;
 public class NowplayingHandler implements Observer
 {
 	private final Nowplaying nowplaying;
+	private final NowplayingConfig nowplayingConfig;
     private final HashMap<Long,Pair<Long,Long>> lastNP; // guild -> channel,message
     
     private boolean shuttingDown = false;
     private JDA jda;
     
-    public NowplayingHandler(Nowplaying nowplaying)
+    public NowplayingHandler(Nowplaying nowplaying, NowplayingConfig nowplayingConfig)
     {
     	this.nowplaying = nowplaying;
         this.lastNP = new HashMap<>();
+        this.nowplayingConfig = nowplayingConfig;
     }
     
     public void setJDA(JDA jda) {
@@ -170,7 +172,7 @@ public class NowplayingHandler implements Observer
     public void onTrackUpdate(long guildId, AudioTrack track, AudioHandler handler)
     {
         // update bot status if applicable
-        if(nowplaying.getConfig().getSongInStatus())
+        if(nowplayingConfig.getSongInStatus())
         {
             if(track!=null && jda.getGuilds().stream().filter(g -> g.getSelfMember().getVoiceState().inVoiceChannel()).count()<=1)
                 jda.getPresence().setGame(Game.listening(track.getInfo().title));

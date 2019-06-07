@@ -18,9 +18,6 @@ package com.jagrosh.jmusicbot;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jmusicbot.audio.Nowplaying;
-import com.jagrosh.jmusicbot.audio.Player;
-import com.jagrosh.jmusicbot.commands.owner.BotControlCmd;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import com.jagrosh.jmusicbot.shutdown.Observer;
 
@@ -33,7 +30,7 @@ import net.dv8tion.jda.core.entities.Guild;
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class Bot implements Player, Nowplaying, BotControlCmd, Observer
+public class Bot implements Observer
 {
     private final EventWaiter waiter;
     private final ScheduledExecutorService threadpool;
