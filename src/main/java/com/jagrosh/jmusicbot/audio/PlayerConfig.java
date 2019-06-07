@@ -7,4 +7,6 @@ public interface PlayerConfig {
     public long getOwnerId();
     public boolean useUpdateAlerts();
     public boolean getDBots();
+    public long getMaxSeconds();
+    public String getMaxTime();
 }

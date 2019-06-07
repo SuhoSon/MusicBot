@@ -128,7 +128,7 @@ public class PlayCmd extends MusicCommand
             if(players.getPlaylistLoader().isTooLong(track))
             {
                 m.editMessage(FormatUtil.filter(event.getClient().getWarning()+" This track (**"+track.getInfo().title+"**) is longer than the allowed maximum: `"
-                        +FormatUtil.formatTime(track.getDuration())+"` > `"+FormatUtil.formatTime(players.getPlayer().getConfig().getMaxSeconds()*1000)+"`")).queue();
+                        +FormatUtil.formatTime(track.getDuration())+"` > `"+FormatUtil.formatTime(players.getPlayerConfig().getMaxSeconds()*1000)+"`")).queue();
                 return;
             }
             AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
@@ -196,7 +196,7 @@ public class PlayCmd extends MusicCommand
                 if(count==0)
                 {
                     m.editMessage(FormatUtil.filter(event.getClient().getWarning()+" All entries in this playlist "+(playlist.getName()==null ? "" : "(**"+playlist.getName()
-                            +"**) ")+"were longer than the allowed maximum (`"+players.getPlayer().getConfig().getMaxTime()+"`)")).queue();
+                            +"**) ")+"were longer than the allowed maximum (`"+players.getPlayerConfig().getMaxTime()+"`)")).queue();
                 }
                 else
                 {
@@ -204,7 +204,7 @@ public class PlayCmd extends MusicCommand
                             +(playlist.getName()==null?"a playlist":"playlist **"+playlist.getName()+"**")+" with `"
                             + playlist.getTracks().size()+"` entries; added to the queue!"
                             + (count<playlist.getTracks().size() ? "\n"+event.getClient().getWarning()+" Tracks longer than the allowed maximum (`"
-                            + players.getPlayer().getConfig().getMaxTime()+"`) have been omitted." : ""))).queue();
+                            + players.getPlayerConfig().getMaxTime()+"`) have been omitted." : ""))).queue();
                 }
             }
         }

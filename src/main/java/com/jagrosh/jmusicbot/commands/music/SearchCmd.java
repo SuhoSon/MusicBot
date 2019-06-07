@@ -88,7 +88,7 @@ public class SearchCmd extends MusicCommand
             if(players.getPlaylistLoader().isTooLong(track))
             {
                 m.editMessage(FormatUtil.filter(event.getClient().getWarning()+" This track (**"+track.getInfo().title+"**) is longer than the allowed maximum: `"
-                        +FormatUtil.formatTime(track.getDuration())+"` > `"+players.getPlayer().getConfig().getMaxTime()+"`")).queue();
+                        +FormatUtil.formatTime(track.getDuration())+"` > `"+players.getPlayerConfig().getMaxTime()+"`")).queue();
                 return;
             }
             AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
@@ -110,7 +110,7 @@ public class SearchCmd extends MusicCommand
                         if(players.getPlaylistLoader().isTooLong(track))
                         {
                             event.replyWarning("This track (**"+track.getInfo().title+"**) is longer than the allowed maximum: `"
-                                    +FormatUtil.formatTime(track.getDuration())+"` > `"+players.getPlayer().getConfig().getMaxTime()+"`");
+                                    +FormatUtil.formatTime(track.getDuration())+"` > `"+players.getPlayerConfig().getMaxTime()+"`");
                             return;
                         }
                         AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
