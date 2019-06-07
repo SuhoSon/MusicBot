@@ -32,6 +32,8 @@ import com.jagrosh.jmusicbot.commands.music.*;
 import com.jagrosh.jmusicbot.commands.owner.*;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.gui.GUI;
+import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
+import com.jagrosh.jmusicbot.playlist.PlaylistConfig;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
 import com.jagrosh.jmusicbot.shutdown.ShutdownListener;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
@@ -91,8 +93,10 @@ public class JMusicBot
         
         NowplayingHandler nowplaying = new NowplayingHandler((Nowplaying)bot, (NowplayingConfig)config);
         nowplaying.init();
+        
+        PlaylistLoader playlists = new PlaylistLoader((PlaylistConfig)config);
 
-        PlayerManager playermanager = new PlayerManager((Player)bot, nowplaying, (PlayerConfig)config);
+        PlayerManager playermanager = new PlayerManager((Player)bot, nowplaying, (PlayerConfig)config, playlists);
         playermanager.init();
 
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
@@ -139,8 +143,8 @@ public class JMusicBot
                         new SettcCmd(),
                         new SetvcCmd(),
                         
-                        new AutoplaylistCmd(playermanager.getPlaylistLoader()),
-                        new PlaylistCmd(playermanager.getPlaylistLoader()),
+                        new AutoplaylistCmd(playlists),
+                        new PlaylistCmd(playlists),
                         new SetavatarCmd(),
                         new SetgameCmd(),
                         new SetnameCmd(),

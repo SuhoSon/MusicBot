@@ -33,12 +33,12 @@ public class PlayerManager extends DefaultAudioPlayerManager
     private final NowplayingHandler nowplayingHandler;
     private final PlaylistLoader playlists;
     
-    public PlayerManager(Player player, NowplayingHandler nowplayingHandler, PlayerConfig playerConfig)
+    public PlayerManager(Player player, NowplayingHandler nowplayingHandler, PlayerConfig playerConfig, PlaylistLoader playlists)
     {
         this.player = player;
         this.nowplayingHandler = nowplayingHandler;
-        this.playlists = null;
         this.playerConfig = playerConfig;
+        this.playlists = playlists;
     }
     
     public PlaylistLoader getPlaylistLoader() {
