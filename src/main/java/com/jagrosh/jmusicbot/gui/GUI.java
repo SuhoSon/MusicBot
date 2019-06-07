@@ -58,8 +58,6 @@ public class GUI extends JFrame
                 try
                 {
                 	shutdownlistener.shutdown();
-                    dispose();
-                    System.exit(0);
                 }
                 catch(Exception ex)
                 {

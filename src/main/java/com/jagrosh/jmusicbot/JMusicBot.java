@@ -190,6 +190,7 @@ public class JMusicBot
                 try 
                 {
                     GUI gui = new GUI(shutdownlistener);
+                    shutdownlistener.setGUI(gui);
                     gui.init();
                 } 
                 catch(Exception e) 
