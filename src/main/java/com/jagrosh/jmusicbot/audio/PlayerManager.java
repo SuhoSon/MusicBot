@@ -15,7 +15,7 @@
  */
 package com.jagrosh.jmusicbot.audio;
 
-import com.jagrosh.jmusicbot.Bot;
+import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
@@ -28,11 +28,21 @@ import net.dv8tion.jda.core.entities.Guild;
  */
 public class PlayerManager extends DefaultAudioPlayerManager
 {
-    private final Bot bot;
+    private final Player player;
+    private final PlayerConfig playerConfig;
+    private final NowplayingHandler nowplayingHandler;
+    private final PlaylistLoader playlists;
     
-    public PlayerManager(Bot bot)
+    public PlayerManager(Player player, NowplayingHandler nowplayingHandler, PlayerConfig playerConfig, PlaylistLoader playlists)
     {
-        this.bot = bot;
+        this.player = player;
+        this.nowplayingHandler = nowplayingHandler;
+        this.playerConfig = playerConfig;
+        this.playlists = playlists;
+    }
+    
+    public PlaylistLoader getPlaylistLoader() {
+    	return this.playlists;
     }
     
     public void init()
@@ -42,9 +52,16 @@ public class PlayerManager extends DefaultAudioPlayerManager
         source(YoutubeAudioSourceManager.class).setPlaylistPageCount(10);
     }
     
-    public Bot getBot()
-    {
-        return bot;
+    public Player getPlayer() {
+    	return player;
+    }
+    
+    public PlayerConfig getPlayerConfig() {
+    	return playerConfig;
+    }
+    
+    public NowplayingHandler getNowplayingHandler() {
+    	return nowplayingHandler;
     }
     
     public boolean hasHandler(Guild guild)
@@ -57,10 +74,10 @@ public class PlayerManager extends DefaultAudioPlayerManager
         AudioHandler handler;
         if(guild.getAudioManager().getSendingHandler()==null)
         {
-            AudioPlayer player = createPlayer();
-            player.setVolume(bot.getSettingsManager().getSettings(guild).getVolume());
-            handler = new AudioHandler(this, guild, player);
-            player.addListener(handler);
+            AudioPlayer audioPlayer = createPlayer();
+            audioPlayer.setVolume(player.getSettingsManager().getSettings(guild).getVolume());
+            handler = new AudioHandler(this, guild, audioPlayer);
+            audioPlayer.addListener(handler);
             guild.getAudioManager().setSendingHandler(handler);
         }
         else

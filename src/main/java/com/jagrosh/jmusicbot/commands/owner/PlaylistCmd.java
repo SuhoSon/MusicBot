@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.util.List;
 import com.jagrosh.jdautilities.command.Command;
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
 import com.jagrosh.jmusicbot.commands.owner.AutoplaylistCmd;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader.Playlist;
@@ -30,10 +29,10 @@ import com.jagrosh.jmusicbot.playlist.PlaylistLoader.Playlist;
  */
 public class PlaylistCmd extends OwnerCommand 
 {
-    private final Bot bot;
-    public PlaylistCmd(Bot bot)
+    private final PlaylistsLoaderCmd playlistsLoaderCmd;
+    public PlaylistCmd(PlaylistsLoaderCmd playlistsLoaderCmd)
     {
-        this.bot = bot;
+        this.playlistsLoaderCmd = playlistsLoaderCmd;
         this.guildOnly = false;
         this.name = "playlist";
         this.arguments = "<append|delete|make|setdefault>";
@@ -43,7 +42,7 @@ public class PlaylistCmd extends OwnerCommand
             new AppendlistCmd(),
             new DeletelistCmd(),
             new MakelistCmd(),
-            new DefaultlistCmd(bot)
+            new DefaultlistCmd(playlistsLoaderCmd)
         };
     }
 
@@ -72,11 +71,11 @@ public class PlaylistCmd extends OwnerCommand
         protected void execute(CommandEvent event) 
         {
             String pname = event.getArgs().replaceAll("\\s+", "_");
-            if(bot.getPlaylistLoader().getPlaylist(pname)==null)
+            if(playlistsLoaderCmd.getPlaylist(pname)==null)
             {
                 try
                 {
-                    bot.getPlaylistLoader().createPlaylist(pname);
+                	playlistsLoaderCmd.createPlaylist(pname);
                     event.reply(event.getClient().getSuccess()+" Successfully created playlist `"+pname+"`!");
                 }
                 catch(IOException e)
@@ -104,13 +103,13 @@ public class PlaylistCmd extends OwnerCommand
         protected void execute(CommandEvent event) 
         {
             String pname = event.getArgs().replaceAll("\\s+", "_");
-            if(bot.getPlaylistLoader().getPlaylist(pname)==null)
+            if(playlistsLoaderCmd.getPlaylist(pname)==null)
                 event.reply(event.getClient().getError()+" Playlist `"+pname+"` doesn't exist!");
             else
             {
                 try
                 {
-                    bot.getPlaylistLoader().deletePlaylist(pname);
+                	playlistsLoaderCmd.deletePlaylist(pname);
                     event.reply(event.getClient().getSuccess()+" Successfully deleted playlist `"+pname+"`!");
                 }
                 catch(IOException e)
@@ -142,7 +141,7 @@ public class PlaylistCmd extends OwnerCommand
                 return;
             }
             String pname = parts[0];
-            Playlist playlist = bot.getPlaylistLoader().getPlaylist(pname);
+            Playlist playlist = playlistsLoaderCmd.getPlaylist(pname);
             if(playlist==null)
                 event.reply(event.getClient().getError()+" Playlist `"+pname+"` doesn't exist!");
             else
@@ -159,7 +158,7 @@ public class PlaylistCmd extends OwnerCommand
                 }
                 try
                 {
-                    bot.getPlaylistLoader().writePlaylist(pname, builder.toString());
+                	playlistsLoaderCmd.writePlaylist(pname, builder.toString());
                     event.reply(event.getClient().getSuccess()+" Successfully added "+urls.length+" items to playlist `"+pname+"`!");
                 }
                 catch(IOException e)
@@ -172,9 +171,9 @@ public class PlaylistCmd extends OwnerCommand
     
     public class DefaultlistCmd extends AutoplaylistCmd 
     {
-        public DefaultlistCmd(Bot bot)
+        public DefaultlistCmd(PlaylistsLoaderCmd playlistsLoaderCmd)
         {
-            super(bot);
+            super(playlistsLoaderCmd);
             this.name = "setdefault";
             this.aliases = new String[]{"default"};
             this.arguments = "<playlistname|NONE>";
@@ -195,14 +194,14 @@ public class PlaylistCmd extends OwnerCommand
         @Override
         protected void execute(CommandEvent event) 
         {
-            if(!bot.getPlaylistLoader().folderExists())
-                bot.getPlaylistLoader().createFolder();
-            if(!bot.getPlaylistLoader().folderExists())
+            if(!playlistsLoaderCmd.folderExists())
+            	playlistsLoaderCmd.createFolder();
+            if(!playlistsLoaderCmd.folderExists())
             {
                 event.reply(event.getClient().getWarning()+" Playlists folder does not exist and could not be created!");
                 return;
             }
-            List<String> list = bot.getPlaylistLoader().getPlaylistNames();
+            List<String> list = playlistsLoaderCmd.getPlaylistNames();
             if(list==null)
                 event.reply(event.getClient().getError()+" Failed to load available playlists!");
             else if(list.isEmpty())

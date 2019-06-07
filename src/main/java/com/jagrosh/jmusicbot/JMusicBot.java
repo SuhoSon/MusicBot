@@ -19,6 +19,12 @@ import com.jagrosh.jdautilities.command.CommandClient;
 import com.jagrosh.jdautilities.command.CommandClientBuilder;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
 import com.jagrosh.jdautilities.examples.command.*;
+import com.jagrosh.jmusicbot.audio.Nowplaying;
+import com.jagrosh.jmusicbot.audio.NowplayingConfig;
+import com.jagrosh.jmusicbot.audio.NowplayingHandler;
+import com.jagrosh.jmusicbot.audio.Player;
+import com.jagrosh.jmusicbot.audio.PlayerConfig;
+import com.jagrosh.jmusicbot.audio.PlayerManager;
 import com.jagrosh.jmusicbot.commands.admin.*;
 import com.jagrosh.jmusicbot.commands.dj.*;
 import com.jagrosh.jmusicbot.commands.general.*;
@@ -26,7 +32,10 @@ import com.jagrosh.jmusicbot.commands.music.*;
 import com.jagrosh.jmusicbot.commands.owner.*;
 import com.jagrosh.jmusicbot.entities.Prompt;
 import com.jagrosh.jmusicbot.gui.GUI;
+import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
+import com.jagrosh.jmusicbot.playlist.PlaylistConfig;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
+import com.jagrosh.jmusicbot.shutdown.ShutdownListener;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import java.awt.Color;
 import javax.security.auth.login.LoginException;
@@ -82,6 +91,14 @@ public class JMusicBot
         SettingsManager settings = new SettingsManager();
         Bot bot = new Bot.Builder().setEventWaiter(waiter).setBotConfig(config).setSettingsManager(settings).build();
         
+        NowplayingHandler nowplaying = new NowplayingHandler((Nowplaying)bot, (NowplayingConfig)config);
+        nowplaying.init();
+        
+        PlaylistLoader playlists = new PlaylistLoader((PlaylistConfig)config);
+
+        PlayerManager playermanager = new PlayerManager((Player)bot, nowplaying, (PlayerConfig)config, playlists);
+        playermanager.init();
+
         AboutCommand aboutCommand = new AboutCommand(Color.BLUE.brighter(),
                                 "a music bot that is [easy to host yourself!](https://github.com/jagrosh/MusicBot) (v"+version+")",
                                 new String[]{"High-quality music playback", "FairQueue™ Technology", "Easy to host yourself"},
@@ -102,37 +119,36 @@ public class JMusicBot
                         new PingCommand(),
                         new SettingsCmd(),
                         
-                        new LyricsCmd(bot),
-                        new NowplayingCmd(bot),
-                        new PlayCmd(bot, config.getLoading()),
-                        new PlaylistsCmd(bot),
-                        new QueueCmd(bot),
-                        new RemoveCmd(bot),
-                        new SearchCmd(bot, config.getSearching()),
-                        new SCSearchCmd(bot, config.getSearching()),
-                        new ShuffleCmd(bot),
-                        new SkipCmd(bot),
+                        new LyricsCmd(),
+                        new NowplayingCmd(playermanager),
+                        new PlayCmd(playermanager, config.getLoading()),
+                        new PlaylistsCmd(playermanager),
+                        new QueueCmd(playermanager),
+                        new RemoveCmd(),
+                        new SearchCmd(playermanager, config.getSearching()),
+                        new SCSearchCmd(playermanager, config.getSearching()),
+                        new ShuffleCmd(),
+                        new SkipCmd(),
                         
-                        new ForceskipCmd(bot),
-                        new MoveTrackCmd(bot),
-                        new PauseCmd(bot),
-                        new PlaynextCmd(bot, config.getLoading()),
-                        new RepeatCmd(bot),
-                        new SkiptoCmd(bot),
-                        new StopCmd(bot),
-                        new VolumeCmd(bot),
+                        new ForceskipCmd(),
+                        new MoveTrackCmd(),
+                        new PauseCmd(),
+                        new PlaynextCmd(playermanager, config.getLoading()),
+                        new RepeatCmd(),
+                        new SkiptoCmd(),
+                        new StopCmd(),
+                        new VolumeCmd(),
                         
                         new SetdjCmd(),
                         new SettcCmd(),
                         new SetvcCmd(),
                         
-                        new AutoplaylistCmd(bot),
-                        new PlaylistCmd(bot),
+                        new AutoplaylistCmd(playlists),
+                        new PlaylistCmd(playlists),
                         new SetavatarCmd(),
                         new SetgameCmd(),
                         new SetnameCmd(),
-                        new SetstatusCmd(),
-                        new ShutdownCmd(bot)
+                        new SetstatusCmd()
                 );
         if(config.useEval())
             cb.addCommand(new EvalCmd(bot));
@@ -150,21 +166,6 @@ public class JMusicBot
             cb.setGame(config.getGame());
         CommandClient client = cb.build();
         
-        if(!prompt.isNoGUI())
-        {
-            try 
-            {
-                GUI gui = new GUI(bot);
-                gui.init();
-            } 
-            catch(Exception e) 
-            {
-                log.error("Could not start GUI. If you are "
-                        + "running on a server or in a location where you cannot display a "
-                        + "window, please run in nogui mode using the -Dnogui=true flag.");
-            }
-        }
-        
         log.info("Loaded config from "+config.getConfigLocation());
         
         // attempt to log in and start
@@ -175,10 +176,33 @@ public class JMusicBot
                     .setAudioEnabled(true)
                     .setGame(nogame ? null : Game.playing("loading..."))
                     .setStatus(config.getStatus()==OnlineStatus.INVISIBLE||config.getStatus()==OnlineStatus.OFFLINE ? OnlineStatus.INVISIBLE : OnlineStatus.DO_NOT_DISTURB)
-                    .addEventListener(client, waiter, new Listener(bot))
+                    .addEventListener(client, waiter, new Listener(playermanager))
                     .setBulkDeleteSplittingEnabled(true)
                     .build();
             bot.setJDA(jda);
+            nowplaying.setJDA(jda);
+            
+            ShutdownListener shutdownlistener = new ShutdownListener(jda);
+            cb.addCommand(new ShutdownCmd(shutdownlistener));
+            
+            if(!prompt.isNoGUI())
+            {
+                try 
+                {
+                    GUI gui = new GUI(shutdownlistener);
+                    shutdownlistener.setGUI(gui);
+                    gui.init();
+                } 
+                catch(Exception e) 
+                {
+                    log.error("Could not start GUI. If you are "
+                            + "running on a server or in a location where you cannot display a "
+                            + "window, please run in nogui mode using the -Dnogui=true flag.");
+                }
+            }
+            
+            shutdownlistener.attach(bot);
+            shutdownlistener.attach(nowplaying);
         }
         catch (LoginException ex)
         {

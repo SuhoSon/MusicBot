@@ -15,6 +15,8 @@
  */
 package com.jagrosh.jmusicbot;
 
+import com.jagrosh.jmusicbot.audio.PlayerManager;
+import com.jagrosh.jmusicbot.shutdown.ShutdownListener;
 import com.jagrosh.jmusicbot.utils.OtherUtil;
 import java.util.concurrent.TimeUnit;
 import net.dv8tion.jda.core.JDA;
@@ -26,6 +28,7 @@ import net.dv8tion.jda.core.events.ShutdownEvent;
 import net.dv8tion.jda.core.events.guild.GuildJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageDeleteEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,11 +38,16 @@ import org.slf4j.LoggerFactory;
  */
 public class Listener extends ListenerAdapter
 {
-    private final Bot bot;
+    private final PlayerManager playermanager;
+    private ShutdownListener shutdownlistener;
     
-    public Listener(Bot bot)
+    public Listener(PlayerManager playermanager)
     {
-        this.bot = bot;
+        this.playermanager = playermanager;
+    }
+    
+    public void setShutdownListener(ShutdownListener shutdownlistener) {
+    	this.shutdownlistener = shutdownlistener;
     }
     
     @Override
@@ -56,20 +64,20 @@ public class Listener extends ListenerAdapter
         {
             try
             {
-                String defpl = bot.getSettingsManager().getSettings(guild).getDefaultPlaylist();
-                VoiceChannel vc = bot.getSettingsManager().getSettings(guild).getVoiceChannel(guild);
-                if(defpl!=null && vc!=null && bot.getPlayerManager().setUpHandler(guild).playFromDefault())
+                String defpl = playermanager.getPlayer().getSettingsManager().getSettings(guild).getDefaultPlaylist();
+                VoiceChannel vc = playermanager.getPlayer().getSettingsManager().getSettings(guild).getVoiceChannel(guild);
+                if(defpl!=null && vc!=null && playermanager.setUpHandler(guild).playFromDefault())
                 {
                     guild.getAudioManager().openAudioConnection(vc);
                 }
             }
             catch(Exception ignore) {}
         });
-        if(bot.getConfig().useUpdateAlerts())
+        if(playermanager.getPlayerConfig().useUpdateAlerts())
         {
-            bot.getThreadpool().scheduleWithFixedDelay(() -> 
+        	playermanager.getNowplayingHandler().getNowplaying().getThreadpool().scheduleWithFixedDelay(() -> 
             {
-                User owner = bot.getJDA().getUserById(bot.getConfig().getOwnerId());
+                User owner = playermanager.getNowplayingHandler().getJDA().getUserById(playermanager.getPlayerConfig().getOwnerId());
                 if(owner!=null)
                 {
                     String currentVersion = OtherUtil.getCurrentVersion();
@@ -87,13 +95,13 @@ public class Listener extends ListenerAdapter
     @Override
     public void onGuildMessageDelete(GuildMessageDeleteEvent event) 
     {
-        bot.getNowplayingHandler().onMessageDelete(event.getGuild(), event.getMessageIdLong());
+        playermanager.getNowplayingHandler().onMessageDelete(event.getGuild(), event.getMessageIdLong());
     }
     
     @Override
     public void onShutdown(ShutdownEvent event) 
     {
-        bot.shutdown();
+    	shutdownlistener.shutdown();
     }
 
     @Override
@@ -108,10 +116,10 @@ public class Listener extends ListenerAdapter
         Guild dbots = jda.getGuildById(110373943822540800L);
         if(dbots==null)
             return;
-        if(bot.getConfig().getDBots())
+        if(playermanager.getPlayerConfig().getDBots())
             return;
         jda.getTextChannelById(119222314964353025L)
-                .sendMessage("This account is running JMusicBot. Please do not list bot clones on this server, <@"+bot.getConfig().getOwnerId()+">.").complete();
+                .sendMessage("This account is running JMusicBot. Please do not list bot clones on this server, <@"+playermanager.getPlayerConfig().getOwnerId()+">.").complete();
         dbots.leave().queue();
     }
 }

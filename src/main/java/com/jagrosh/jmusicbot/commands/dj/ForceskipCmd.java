@@ -16,7 +16,6 @@
 package com.jagrosh.jmusicbot.commands.dj;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
 import com.jagrosh.jmusicbot.commands.DJCommand;
 import net.dv8tion.jda.core.entities.User;
@@ -27,9 +26,9 @@ import net.dv8tion.jda.core.entities.User;
  */
 public class ForceskipCmd extends DJCommand 
 {
-    public ForceskipCmd(Bot bot)
-    {
-        super(bot);
+    public ForceskipCmd()
+    {	
+    	super();
         this.name = "forceskip";
         this.help = "skips the current song";
         this.aliases = new String[]{"modskip"};

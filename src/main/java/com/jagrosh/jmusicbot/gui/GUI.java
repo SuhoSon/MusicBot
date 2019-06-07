@@ -17,10 +17,11 @@ package com.jagrosh.jmusicbot.gui;
 
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 import javax.swing.WindowConstants;
-import com.jagrosh.jmusicbot.Bot;
+import com.jagrosh.jmusicbot.shutdown.ShutdownListener;
 
 
 /**
@@ -30,13 +31,13 @@ import com.jagrosh.jmusicbot.Bot;
 public class GUI extends JFrame 
 {
     private final ConsolePanel console;
-    private final Bot bot;
+    private ShutdownListener shutdownlistener;
     
-    public GUI(Bot bot) 
+    public GUI(ShutdownListener shutdownlistener) 
     {
         super();
-        this.bot = bot;
-        console = new ConsolePanel();
+        this.console = new ConsolePanel();
+    	this.shutdownlistener = shutdownlistener;
     }
     
     public void init()
@@ -56,9 +57,7 @@ public class GUI extends JFrame
             {
                 try
                 {
-                    bot.shutdown();
-                    dispose();
-                    System.exit(0);
+                	shutdownlistener.shutdown();
                 }
                 catch(Exception ex)
                 {

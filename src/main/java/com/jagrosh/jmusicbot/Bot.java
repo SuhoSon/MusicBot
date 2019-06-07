@@ -18,11 +18,11 @@ package com.jagrosh.jmusicbot;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import com.jagrosh.jdautilities.commons.waiter.EventWaiter;
-import com.jagrosh.jmusicbot.audio.AudioHandler;
-import com.jagrosh.jmusicbot.audio.NowplayingHandler;
-import com.jagrosh.jmusicbot.audio.PlayerManager;
-import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
+import com.jagrosh.jmusicbot.audio.Nowplaying;
+import com.jagrosh.jmusicbot.audio.Player;
 import com.jagrosh.jmusicbot.settings.SettingsManager;
+import com.jagrosh.jmusicbot.shutdown.Observer;
+
 import java.util.Objects;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.entities.Game;
@@ -32,15 +32,12 @@ import net.dv8tion.jda.core.entities.Guild;
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
-public class Bot
+public class Bot implements Observer, Player, Nowplaying
 {
     private final EventWaiter waiter;
     private final ScheduledExecutorService threadpool;
     private final BotConfig config;
     private final SettingsManager settings;
-    private final PlayerManager players;
-    private final PlaylistLoader playlists;
-    private final NowplayingHandler nowplaying;
     
     private boolean shuttingDown = false;
     private JDA jda;
@@ -50,12 +47,7 @@ public class Bot
         this.waiter = waiter;
         this.config = config;
         this.settings = settings;
-        this.playlists = new PlaylistLoader(config);
         this.threadpool = Executors.newSingleThreadScheduledExecutor();
-        this.players = new PlayerManager(this);
-        this.players.init();
-        this.nowplaying = new NowplayingHandler(this);
-        this.nowplaying.init();
     }
     
     public BotConfig getConfig()
@@ -76,21 +68,6 @@ public class Bot
     public ScheduledExecutorService getThreadpool()
     {
         return threadpool;
-    }
-    
-    public PlayerManager getPlayerManager()
-    {
-        return players;
-    }
-    
-    public PlaylistLoader getPlaylistLoader()
-    {
-        return playlists;
-    }
-    
-    public NowplayingHandler getNowplayingHandler()
-    {
-        return nowplaying;
     }
     
     public JDA getJDA()
@@ -118,21 +95,6 @@ public class Bot
             return;
         shuttingDown = true;
         threadpool.shutdownNow();
-        if(jda.getStatus()!=JDA.Status.SHUTTING_DOWN)
-        {
-            jda.getGuilds().stream().forEach(g -> 
-            {
-                g.getAudioManager().closeAudioConnection();
-                AudioHandler ah = (AudioHandler)g.getAudioManager().getSendingHandler();
-                if(ah!=null)
-                {
-                    ah.stopAndClear();
-                    ah.getPlayer().destroy();
-                    nowplaying.updateTopic(g.getIdLong(), ah, true);
-                }
-            });
-            jda.shutdown();
-        }
     }
 
     public void setJDA(JDA jda)

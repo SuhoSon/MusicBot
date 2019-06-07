@@ -23,8 +23,8 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import java.util.concurrent.TimeUnit;
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jdautilities.menu.OrderedMenu;
-import com.jagrosh.jmusicbot.Bot;
 import com.jagrosh.jmusicbot.audio.AudioHandler;
+import com.jagrosh.jmusicbot.audio.PlayerManager;
 import com.jagrosh.jmusicbot.audio.QueuedTrack;
 import com.jagrosh.jmusicbot.commands.MusicCommand;
 import com.jagrosh.jmusicbot.utils.FormatUtil;
@@ -41,9 +41,9 @@ public class SearchCmd extends MusicCommand
     private final OrderedMenu.Builder builder;
     private final String searchingEmoji;
     
-    public SearchCmd(Bot bot, String searchingEmoji)
+    public SearchCmd(PlayerManager players, String searchingEmoji)
     {
-        super(bot);
+        super(players);
         this.searchingEmoji = searchingEmoji;
         this.name = "search";
         this.aliases = new String[]{"ytsearch"};
@@ -56,7 +56,7 @@ public class SearchCmd extends MusicCommand
                 .allowTextInput(true)
                 .useNumbers()
                 .useCancelButton(true)
-                .setEventWaiter(bot.getWaiter())
+                .setEventWaiter(players.getPlayer().getWaiter())
                 .setTimeout(1, TimeUnit.MINUTES);
     }
     @Override
@@ -68,7 +68,7 @@ public class SearchCmd extends MusicCommand
             return;
         }
         event.reply(searchingEmoji+" Searching... `["+event.getArgs()+"]`", 
-                m -> bot.getPlayerManager().loadItemOrdered(event.getGuild(), searchPrefix + event.getArgs(), new ResultHandler(m,event)));
+                m -> players.loadItemOrdered(event.getGuild(), searchPrefix + event.getArgs(), new ResultHandler(m,event)));
     }
     
     private class ResultHandler implements AudioLoadResultHandler 
@@ -85,10 +85,10 @@ public class SearchCmd extends MusicCommand
         @Override
         public void trackLoaded(AudioTrack track)
         {
-            if(bot.getConfig().isTooLong(track))
+            if(players.getPlaylistLoader().isTooLong(track))
             {
                 m.editMessage(FormatUtil.filter(event.getClient().getWarning()+" This track (**"+track.getInfo().title+"**) is longer than the allowed maximum: `"
-                        +FormatUtil.formatTime(track.getDuration())+"` > `"+bot.getConfig().getMaxTime()+"`")).queue();
+                        +FormatUtil.formatTime(track.getDuration())+"` > `"+players.getPlayerConfig().getMaxTime()+"`")).queue();
                 return;
             }
             AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
@@ -107,10 +107,10 @@ public class SearchCmd extends MusicCommand
                     .setSelection((msg,i) -> 
                     {
                         AudioTrack track = playlist.getTracks().get(i-1);
-                        if(bot.getConfig().isTooLong(track))
+                        if(players.getPlaylistLoader().isTooLong(track))
                         {
                             event.replyWarning("This track (**"+track.getInfo().title+"**) is longer than the allowed maximum: `"
-                                    +FormatUtil.formatTime(track.getDuration())+"` > `"+bot.getConfig().getMaxTime()+"`");
+                                    +FormatUtil.formatTime(track.getDuration())+"` > `"+players.getPlayerConfig().getMaxTime()+"`");
                             return;
                         }
                         AudioHandler handler = (AudioHandler)event.getGuild().getAudioManager().getSendingHandler();
