@@ -16,6 +16,7 @@
 package com.jagrosh.jmusicbot.audio;
 
 import com.jagrosh.jmusicbot.JMusicBot;
+import com.jagrosh.jmusicbot.playlist.PlaylistLoader;
 import com.jagrosh.jmusicbot.playlist.PlaylistLoader.Playlist;
 import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
 import com.sedmelluq.discord.lavaplayer.player.event.AudioEventAdapter;
@@ -49,16 +50,22 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
     private final Set<String> votes = new HashSet<>();
     
     private final PlayerManager manager;
+    private final PlaylistLoader playlists;
     private final AudioPlayer audioPlayer;
     private final long guildId;
     
     private AudioFrame lastFrame;
 
-    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player)
+    protected AudioHandler(PlayerManager manager, Guild guild, AudioPlayer player, PlaylistLoader playlists)
     {
         this.manager = manager;
         this.audioPlayer = player;
         this.guildId = guild.getIdLong();
+        this.playlists = playlists;
+    }
+    
+    public long getGuildId() {
+    	return this.guildId;
     }
 
     public int addTrackToFront(QueuedTrack qtrack)
@@ -132,7 +139,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         if(settings==null || settings.getDefaultPlaylist()==null)
             return false;
         
-        Playlist pl = manager.getPlayer().getPlaylistLoader().getPlaylist(settings.getDefaultPlaylist());
+        Playlist pl = playlists.getPlaylist(settings.getDefaultPlaylist());
         if(pl==null || pl.getItems().isEmpty())
             return false;
         pl.loadTracks(manager, (at) -> 
@@ -163,7 +170,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
         {
             if(!playFromDefault())
             {
-                manager.getPlayer().getNowplayingHandler().onTrackUpdate(guildId, null, this);
+                manager.getNowplayingHandler().onTrackUpdate(guildId, null, this);
                 if(!manager.getPlayer().getConfig().getStay())
                     manager.getPlayer().closeAudioConnection(guildId);
             }
@@ -179,7 +186,7 @@ public class AudioHandler extends AudioEventAdapter implements AudioSendHandler
     public void onTrackStart(AudioPlayer player, AudioTrack track) 
     {
         votes.clear();
-        manager.getPlayer().getNowplayingHandler().onTrackUpdate(guildId, track, this);
+        manager.getNowplayingHandler().onTrackUpdate(guildId, track, this);
     }
 
     

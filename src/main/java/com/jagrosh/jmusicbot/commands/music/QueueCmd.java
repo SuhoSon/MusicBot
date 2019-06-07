@@ -82,7 +82,7 @@ public class QueueCmd extends MusicCommand
             event.reply(built, m -> 
             {
                 if(nowp!=null)
-                	players.getPlayer().getNowplayingHandler().setLastNPMessage(m);
+                	players.getNowplayingHandler().setLastNPMessage(m);
             });
             return;
         }

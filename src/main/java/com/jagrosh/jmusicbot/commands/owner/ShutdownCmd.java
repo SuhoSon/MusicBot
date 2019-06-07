@@ -17,27 +17,27 @@ package com.jagrosh.jmusicbot.commands.owner;
 
 import com.jagrosh.jdautilities.command.CommandEvent;
 import com.jagrosh.jmusicbot.commands.OwnerCommand;
+import com.jagrosh.jmusicbot.shutdown.ShutdownListener;
 
 /**
  *
  * @author John Grosh <john.a.grosh@gmail.com>
  */
 public class ShutdownCmd extends OwnerCommand
-{
-    private final BotControlCmd botControlCmd;
-    
-    public ShutdownCmd(BotControlCmd botControlCmd)
+{   
+	private ShutdownListener shutdownlistener;
+    public ShutdownCmd(ShutdownListener shutdownlistener)
     {
-        this.botControlCmd = botControlCmd;
         this.name = "shutdown";
         this.help = "safely shuts down";
         this.guildOnly = false;
+        this.shutdownlistener = shutdownlistener;
     }
     
     @Override
     protected void execute(CommandEvent event)
     {
         event.replyWarning("Shutting down...");
-        botControlCmd.shutdown();
+        shutdownlistener.shutdown();
     }
 }
