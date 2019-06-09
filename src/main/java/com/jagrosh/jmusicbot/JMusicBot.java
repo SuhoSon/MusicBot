@@ -61,12 +61,13 @@ public class JMusicBot
      */
     public static void main(String[] args)
     {
+        Boolean nogui = "true".equalsIgnoreCase(System.getProperty("nogui", "false"));
         // startup log
         Logger log = LoggerFactory.getLogger("Startup");
         
         // create prompt to handle startup
         Prompt prompt = new Prompt("JMusicBot", "Switching to nogui mode. You can manually start in nogui mode by including the -Dnogui=true flag.", 
-                "true".equalsIgnoreCase(System.getProperty("nogui", "false")));
+                nogui);
         
         // check deprecated nogui mode (new way of setting it is -Dnogui=true)
         for(String arg: args)
@@ -165,6 +166,21 @@ public class JMusicBot
         else
             cb.setGame(config.getGame());
         CommandClient client = cb.build();
+        
+        if(!nogui)
+        {
+            try 
+            {
+                GUI gui = new GUI(bot);
+                gui.init();
+            } 
+            catch(Exception e) 
+            {
+                log.error("Could not start GUI. If you are "
+                        + "running on a server or in a location where you cannot display a "
+                        + "window, please run in nogui mode using the -Dnogui=true flag.");
+            }
+        }
         
         log.info("Loaded config from "+config.getConfigLocation());
         
