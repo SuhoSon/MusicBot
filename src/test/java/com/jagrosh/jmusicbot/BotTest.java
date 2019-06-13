@@ -249,7 +249,7 @@ public class BotTest {
 	 * 			Return correct instances.
 	 */
 	@Test
-	public void getSettingsManagerTest() {
+	public void gettterTest() {
         assertEquals(settings, bot.getSettingsManager());
         assertEquals(config, bot.getConfig());
         assertEquals(jda, bot.getJDA());
