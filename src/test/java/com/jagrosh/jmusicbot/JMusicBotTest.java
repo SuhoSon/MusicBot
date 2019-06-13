@@ -67,6 +67,12 @@ public class JMusicBotTest {
 
 		originalFile = new File("C:\\Users\\Son\\git\\MusicBot\\config_temp.txt");
 		newFile = new File("C:\\Users\\Son\\git\\MusicBot\\config.txt");
+		
+		if(newFile.exists())
+			newFile.delete();
+		
+		newFile = new File("C:\\Users\\Son\\git\\MusicBot\\config.txt");
+		
 		fileInputStream = new FileInputStream(originalFile);
 		fileOutputStream = new FileOutputStream(newFile);
 		bufferedReader = new BufferedReader(new InputStreamReader(fileInputStream));
